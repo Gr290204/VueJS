@@ -1,7 +1,7 @@
 // внутри flowerStore.js
 import { defineStore } from 'pinia';
 import { apiService } from './apiService';
-
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 export const useFlowerStore = defineStore('flower', {
     state: () => ({
         flowers: [],
@@ -18,7 +18,7 @@ export const useFlowerStore = defineStore('flower', {
                 if (this.loaded) {
                     return;
                 }
-                const data = await apiService({ token, url: 'http://127.0.0.1:8000/api/flower' });
+                const data = await apiService({ token, url: backendUrl+'/flower' });
                 this.flowers = data;
                 this.loaded = true;
                 this.errorMessage = '';

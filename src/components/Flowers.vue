@@ -1,45 +1,62 @@
-<script setup>
-import { onMounted } from 'vue';
-import { useFlowerStore } from '@/stores/flowerStore';
-import { useAuthStore } from '@/stores/authStore';
-
-const authStore = useAuthStore();
-const flowerStore = useFlowerStore();
-
-onMounted(() => {
-  flowerStore.fetchFlowers(authStore.token);
-});
-</script>
-
 <template>
-  <div>
-    <h2>Цветы</h2>
-    <div v-if="flowerStore.errorMessage" class="error">{{ flowerStore.errorMessage }}</div>
-    <table v-if="flowerStore.flowers.length">
-      <thead>
-      <tr>
-        <th>Название цветка</th>
-        <th>Цена</th>
-        <th>Остатки</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr v-for="flower in flowerStore.flowers" :key="flower.id">
-        <td>{{ flower.flower_name }}</td>
-        <td>{{ flower.flower_price }}</td>
-        <td>{{ flower.flower_remains }}</td>
-      </tr>
-      </tbody>
-    </table>
-    <div v-else>
-      Нет данных о цветах.
-    </div>
-  </div>
+  <DataTable
+      :value="flowers"
+      :lazy="true"
+      :loading="dataStore.loading"
+      :paginator="true"
+      :rows="perpage"
+      :rowsPerPageOptions="[2, 5, 10]"
+      :totalRecords="flowers_total"
+      @page="onPageChange"
+      responsive-layout="scroll"
+      :laading="true"
+      :first="offset"
+  >
+    <Column field="id" header="№"/>
+    <Column field="flower_name" header="Цветок" />
+    <Column field="flower_price" header="Цена" />
+    <Column field="flower_remains" header="Остаток" />
+  </DataTable>
 </template>
 
+<script>
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
+import { useDataStore } from '@/stores/dataStore';
+
+export default {
+  name: "Flowers",
+  components: { DataTable, Column },
+  data() {
+    return {
+      dataStore: useDataStore(),
+      perpage: 5,
+      offset: 0,
+    };
+  },
+  computed: {
+    flowers() {
+      return this.dataStore.flowers;
+    },
+    flowers_total() {
+      return this.dataStore.flowers_total;
+    },
+  },
+  mounted() {
+    console.log('flowers component MOUNTED!');
+    this.dataStore.get_flowers();
+    this.dataStore.get_flowers_total();
+    console.log('Flowers=', this.flowers);
+  },
+  methods: {
+    onPageChange(event) {
+      this.offset = event.first;
+      this.perpage = event.rows;
+      this.dataStore.get_flowers(this.offset / this.perpage,  this.perpage );
+    }
+  }
+}
+</script>
 
 <style scoped>
-.error {
-  color: red;
-}
 </style>
