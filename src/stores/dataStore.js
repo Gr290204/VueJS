@@ -92,6 +92,7 @@ export const useDataStore = defineStore('data', {
             try {
                 const response = await axios.get(backendUrl + '/flower_total');
                 this.flowers_total = response.data;
+                console.log('flowers = ', this.flowers_total);
             } catch (error) {
                 if (error.response) {
                     this.errorMessage = error.response.data.message;
