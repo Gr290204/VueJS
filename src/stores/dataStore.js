@@ -9,11 +9,51 @@ export const useDataStore = defineStore('data', {
         clients: [],
         clients_total: null,
         items: [],
+        errorCode: "",
         errorMessage: "",
         flowers: [],
         flowers_total: null,
     }),
     actions: {
+
+
+        async create_flower(formData) {
+            this.errorMessage = "";
+            try {
+                const response = await axios.post(
+                    backendUrl + '/flower',
+                    formData,
+                    {
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                            Authorization: 'Bearer ' + localStorage.getItem('token')
+                        }
+                    }
+                );
+
+                this.errorCode = response.data.code;
+                this.errorMessage = response.data.message;
+
+            } catch (error) {
+
+                if (error.response) {
+                    this.errorCode = 11;
+                    this.errorMessage = error.response.data.message;
+                    console.log(error);
+
+                } else if (error.request) {
+                    this.errorCode = 12;
+                    this.errorMessage = error.message;
+                    console.log(error);
+
+                } else {
+                    this.errorCode = 13;
+                    console.log(error);
+                }
+            }
+        },
+
+
         async get_clients(page = 0, perpage = 5) {
             this.errorMessage = "";
 

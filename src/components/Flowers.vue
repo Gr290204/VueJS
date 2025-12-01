@@ -17,7 +17,12 @@
     <Column field="flower_price" header="Цена" />
     <Column field="flower_remains" header="Остаток" />
   </DataTable>
+
+  <div class="text-end">
+    <Button type="button" @click="this.$router.push('/createFlower')" icon="pi pi-plus" label="Add Category" />
+  </div>
 </template>
+
 
 <script>
 import DataTable from "primevue/datatable";
